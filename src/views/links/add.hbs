@@ -1,0 +1,399 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.min.js"></script>
+<style>
+  body {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    background-image: url('../backgroundImage/standard.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100vw auto;
+  }
+
+  .form {
+    background-color: #15172b;
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding: 20px;
+    width: 30vw;
+
+  }
+
+  .title {
+    color: #eee;
+    font-family: sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+    margin-top: 30px;
+    text-align: center;
+  }
+
+  .subtitle {
+    color: #eee;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+    text-align: center;
+
+  }
+
+  .input-container {
+    height: 50px;
+    position: relative;
+    width: 100%;
+  }
+
+  .ic1 {
+    margin-top: 40px;
+  }
+
+  .ic2 {
+    margin-top: 30px;
+  }
+
+  .input {
+    background-color: #303245;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
+    font-size: 18px;
+    height: 100%;
+    outline: 0;
+    padding: 4px 20px 0;
+    width: 100%;
+  }
+
+  .cut {
+    background-color: #15172b;
+    border-radius: 10px;
+    height: 20px;
+    left: 20px;
+    position: absolute;
+    top: -20px;
+    transform: translateY(0);
+    transition: transform 200ms;
+    width: 65px;
+  }
+
+  .cut-short {
+    width: 80px;
+  }
+
+  .input:focus~.cut,
+  .input:not(:placeholder-shown)~.cut {
+    transform: translateY(8px);
+  }
+
+  .placeeholder {
+    color: #65657b;
+    font-family: sans-serif;
+    left: 20px;
+    line-height: 14px;
+    pointer-events: none;
+    position: absolute;
+    transform-origin: 0 50%;
+    transition: transform 200ms, color 200ms;
+    top: 20px;
+  }
+
+  .input:focus~.placeeholder,
+  .input:not(:placeholder-shown)~.placeeholder {
+    transform: translateY(-30px) translateX(10px) scale(0.75);
+  }
+
+  .input:not(:placeholder-shown)~.placeeholder {
+    color: #808097;
+  }
+
+  .input:focus~.placeeholder {
+    color: #65657b;
+  }
+
+  .submit {
+    background-color: #08d;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
+    cursor: pointer;
+    font-size: 18px;
+    height: 50px;
+    margin-top: 38px;
+    outline: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  .submit:active {
+    background-color: #06b;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .uploadImage {
+    color: #a9a9b6;
+    height: 60px;
+    width: 400px;
+    background-color: rgb(79, 66, 195);
+    display: flex;
+    font-family: sans-serif;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  #placeholderImg {
+    display: block;
+    margin: 0 auto;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    -o-object-fit: cover;
+    object-fit: cover;
+    -webkit-box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0, 0, 0, 0.13);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0, 0, 0, 0.13);
+    border: 3px solid #fff;
+  }
+
+  .imageButtons {
+    margin-right: 10px;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .spaceButtons {
+    margin: 30px;
+    color: white;
+  }
+
+  .inputfile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* The Modal (background) */
+  .modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 50px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+  }
+
+  /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+  }
+
+  /* The Close Button */
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+</style>
+
+<div class="form">
+  <img id="placeholderImg" src="../defaultImg/defaultImg23698.jpg" alt="">
+  <form id="myForm" action="/links/add" method="POST">
+    <div class="title">Bienvenido</div>
+    <div class="subtitle">Complete los datos</div>
+    <div class="input-container ic1">
+      <input name="tempfname" id="firstname" class="input" type="text" placeholder=" "
+        onchange="resetColor('placeeholderName')" />
+      <div class="cut"></div>
+      <label for="firstname" class="placeeholder" id="placeeholderName">Nombre</label>
+    </div>
+    <div class="input-container ic2">
+      <input name="templastname" id="lastname" class="input" type="text" placeholder=" "
+        onchange="resetColor('placeeholderLastname')" />
+      <div class="cut"></div>
+      <label for="lastname" class="placeeholder" id="placeeholderLastname">Apellido</label>
+    </div>
+    <div class="input-container ic2">
+      <input name="tempdescription" id="description" class="input" type="text" placeholder=" "
+        onchange="resetColor('placeeholderDescription')" />
+      <div class="cut cut-short"></div>
+      <label for="description" class="placeeholder" id="placeeholderDescription">Comentarios</label>
+    </div>
+  </form>
+  <br>
+  <form id="myForm1" action="/links/image" method="POST" encType="multipart/form-data">
+
+    <div class="imageButtons">
+      <input id="file" class="inputfile" type="file" name="sampleFile" accept="image/*" onchange="loadFile(event)">
+      <label id="uploadImage" class="uploadImage" for="file">Subir archivo</label>
+      <div class="spaceButtons"> O </div>
+      <button id="myBtn" class="uploadImage" type="button">Foto</button>
+    </div>
+
+  </form>
+  
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="video-wrap">
+        <video id="video" playsinline autoplay></video>
+    </div>
+    <div class="controller">
+        <button id="snap">Capture</button>
+    </div>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script>
+        'use strict';
+
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const snap = document.getElementById("snap");
+        const errorMsgElement = document.getElementById("span#MsgElement");
+
+        const constraints = {
+            video:{
+                width: 640 , height:480
+            }
+        };
+
+        async function init(){
+            try{
+                const stream= await navigator.mediaDevices.getUserMedia(constraints);
+                handleSuccess(stream);
+            }
+            catch(e){
+                errorMsgElement.innerHTML = `navigator.getUserMedia.error:${e.toString()}`;
+            }
+        }
+
+        function handleSuccess(stream){
+            window.stream= stream;
+            video.srcObject=stream;
+        }
+
+        init();
+
+        var context = canvas.getContext('2d');
+        snap.addEventListener("click",function(){
+            var placeholderImg = document.getElementById("placeholderImg");
+            placeholderImg.src = URL.createObjectURL(context);
+
+        })
+    </script>
+    </div>
+
+  </div>
+  <input class="submit" type="button" onclick="myFunction()" value="Submit form">
+
+</div>
+
+
+
+
+
+<script>
+  var changeImg = false;
+  function validationCheck(variableName, idname) {
+    if (variableName === '' || variableName === ' ')
+      return document.getElementById(idname).style.color = 'red';
+  }
+
+  function resetColor(resetName) {
+    document.getElementById(resetName).style.color = '#65657b';
+  }
+
+  file.onchange = evt => {
+    changeImg = true;
+    var placeholderImg = document.getElementById("placeholderImg");
+    document.getElementsByClassName("uploadImage")[0].style.color = '#a9a9b6'
+    const [imgfile] = file.files;
+    document.getElementById("uploadImage").innerHTML = [imgfile.name];
+    if (imgfile) {
+      placeholderImg.src = URL.createObjectURL(imgfile)
+    }
+  }
+
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+  function myFunction() {
+    //Chequeo form1
+    let myFormName = document.forms["myForm"]["tempfname"].value;
+    validationCheck(myFormName, "placeeholderName");
+    let myFormLastname = document.forms["myForm"]["templastname"].value;
+    validationCheck(myFormLastname, "placeeholderLastname");
+    let description = document.forms["myForm"]["description"].value;
+    validationCheck(description, "placeeholderDescription");
+
+    //Chequeo form2
+    if (!changeImg) {
+      return document.getElementsByClassName("uploadImage")[0].style.color = 'red';
+    }
+
+
+
+    //document.getElementById("myForm").submit();
+    //document.getElementById("myForm1").submit();
+  };
+</script>
