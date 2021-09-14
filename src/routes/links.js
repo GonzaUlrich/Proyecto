@@ -4,6 +4,7 @@ const router = express.Router();
 const pool = require('../database');
 const fileUpload = require('express-fileupload');
 
+
 //Data File
 const newData= {id:0, fname:'0', lastname:'0', imgLowSize:'0', imgBigSize:'0', description:'0', user_id:0};
 
@@ -41,8 +42,8 @@ router.post('/add', async (req,res)=>{
 });
 
 router.post('/image', (req,res)=>{
-    
-    let sampleFile;
+
+let sampleFile;
     let uploadPath;
 
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -52,18 +53,13 @@ router.post('/image', (req,res)=>{
     // name of the input is sampleFile
     sampleFile = req.files.sampleFile;
     let changeDirPath = __dirname.replace("routes",'');
-
-    console.log(changeDirPath);
-    uploadPath= changeDirPath + '/uploadImages/fullImage/' + sampleFile.name;
-  
+    
+    uploadPath= changeDirPath + '/uploadImages/fullImage/' + sampleFile.name ;
     // Use mv() to place file on the server
     sampleFile.mv(uploadPath, function (err) {
-      //if (err) return res.status(500).send(err);
-
-
-        
+      if (err) return res.status(500).send(err);
     });
-    console.log('lesto2');
+    
 
     //Save big img path
     

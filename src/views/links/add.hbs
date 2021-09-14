@@ -1,4 +1,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.min.js"></script>
+
 <style>
   body {
     align-items: center;
@@ -189,32 +190,33 @@
   .modal {
     display: none;
     /* Hidden by default */
-    position: fixed;
-    /* Stay in place */
     z-index: 1;
     /* Sit on top */
-    padding-top: 50px;
     /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%;
+    overflow-y: hidden;
+    width: 87vw;
     /* Full width */
-    height: 100%;
+
     /* Full height */
-    overflow: auto;
-    /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0);
-    /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* Modal Content */
   .modal-content {
-    background-color: #fefefe;
+    background-color: #15172be3;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
+    height: 95vh;
+  }
+
+  .allignTopModal {
+    display: flex;
+    justify-content: space-between;
   }
 
   /* The Close Button */
@@ -230,6 +232,43 @@
     color: #000;
     text-decoration: none;
     cursor: pointer;
+  }
+
+
+  .cameraButtons {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .cameraButtons button {
+    display: flex;
+    flex-direction: row;
+    background-color: #08d;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
+    cursor: pointer;
+    font-size: 18px;
+    height: 50px;
+    outline: 0;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+
+  }
+
+  .centerCamera {
+    display: flex;
+    align-items: center;
+  }
+
+  #video {
+    max-height: 100%;
+  }
+
+  #canvas {
+    margin-left: 50px;
   }
 </style>
 
@@ -268,56 +307,53 @@
     </div>
 
   </form>
-  
+
   <div id="myModal" class="modal">
     <!-- Modal content -->
     <div class="modal-content">
-      <span class="close">&times;</span>
-      <div class="video-wrap">
-        <video id="video" playsinline autoplay></video>
-    </div>
-    <div class="controller">
-        <button id="snap">Capture</button>
-    </div>
-    <canvas id="canvas" width="640" height="480"></canvas>
-    <script>
-        'use strict';
+      <div class="allignTopModal">
+        <span class="close">&times;</span>
+        <div class="cameraButtons">
+          <button id="start-camera">Start Camera</button>
+          <button id="click-photo">Click Photo</button>
+        </div>
+      </div>
+      <div class="centerCamera">
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+      </div>
 
-        const video = document.getElementById("video");
-        const canvas = document.getElementById("canvas");
-        const snap = document.getElementById("snap");
-        const errorMsgElement = document.getElementById("span#MsgElement");
+      <script>
+        let camera_button = document.querySelector("#start-camera");
+        let video = document.querySelector("#video");
+        var videoWidth,videoHeight;
+        video.addEventListener( "loadedmetadata", function (e) {
+          videoWidth = this.videoWidth;
+          videoHeight = this.videoHeight;
+        }, false );
+        let click_button = document.querySelector("#click-photo");
+        let canvas = document.querySelector("#canvas");
 
-        const constraints = {
-            video:{
-                width: 640 , height:480
-            }
-        };
+        camera_button.addEventListener('click', async function () {
+          let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          video.srcObject = stream;
+        });
 
-        async function init(){
-            try{
-                const stream= await navigator.mediaDevices.getUserMedia(constraints);
-                handleSuccess(stream);
-            }
-            catch(e){
-                errorMsgElement.innerHTML = `navigator.getUserMedia.error:${e.toString()}`;
-            }
-        }
+        click_button.addEventListener('click', function () {
+          if(videoWidth > videoHeight){
+            let cal = (videoWidth - videoHeight)/2;
+            console.log(cal);
+            console.log(videoHeight)
+            canvas.getContext('2d').drawImage(video, cal, 0, videoHeight, videoHeight ,0,0,200,200);
+          }
+          
+          let image_data_url = canvas.toDataURL();
+          var placeholderImg = document.getElementById("placeholderImg");
+          placeholderImg.src = image_data_url;
 
-        function handleSuccess(stream){
-            window.stream= stream;
-            video.srcObject=stream;
-        }
-
-        init();
-
-        var context = canvas.getContext('2d');
-        snap.addEventListener("click",function(){
-            var placeholderImg = document.getElementById("placeholderImg");
-            placeholderImg.src = URL.createObjectURL(context);
-
-        })
-    </script>
+          // data url of the image
+        });
+      </script>
     </div>
 
   </div>
@@ -330,53 +366,62 @@
 
 
 <script>
+  var notAbilable = false;
   var changeImg = false;
   function validationCheck(variableName, idname) {
-    if (variableName === '' || variableName === ' ')
+    notAbilable = false;
+    if (variableName === '' || variableName === ' ') {
       return document.getElementById(idname).style.color = 'red';
+      notAbilable = true;
+    }
   }
 
   function resetColor(resetName) {
     document.getElementById(resetName).style.color = '#65657b';
+    notAbilable = false;
   }
 
   file.onchange = evt => {
+    notAbilable = false;
+    document.getElementsByClassName("uploadImage")[0].style.color = '#a9a9b6'
     changeImg = true;
     var placeholderImg = document.getElementById("placeholderImg");
-    document.getElementsByClassName("uploadImage")[0].style.color = '#a9a9b6'
     const [imgfile] = file.files;
+    console.log(file);
+    console.log(file.files);
     document.getElementById("uploadImage").innerHTML = [imgfile.name];
     if (imgfile) {
       placeholderImg.src = URL.createObjectURL(imgfile)
     }
   }
 
-// Get the modal
-var modal = document.getElementById("myModal");
+  // Get the modal
+  var modal = document.getElementById("myModal");
 
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
+  // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
 
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
 
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-  modal.style.display = "block";
-}
+  // When the user clicks the button, open the modal 
+  btn.onclick = function () {
+    modal.style.display = "block";
+  }
 
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
     modal.style.display = "none";
   }
-}
 
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  //LLamado al submit
   function myFunction() {
     //Chequeo form1
     let myFormName = document.forms["myForm"]["tempfname"].value;
@@ -387,13 +432,21 @@ window.onclick = function(event) {
     validationCheck(description, "placeeholderDescription");
 
     //Chequeo form2
-    if (!changeImg) {
-      return document.getElementsByClassName("uploadImage")[0].style.color = 'red';
+    //notAbilable = true;
+    if (!changeImg ) {
+      
+      //return document.getElementsByClassName("uploadImage")[0].style.color = 'red';
     }
 
 
+    if (true) {
+      console.log(file)
+      console.log(file.name)
+      file.name = placeholderImg;
+      console.log(file.name)
+      //document.getElementById("myForm").submit();
+      //document.getElementById("myForm1").submit();
+    }
 
-    //document.getElementById("myForm").submit();
-    //document.getElementById("myForm1").submit();
   };
 </script>
