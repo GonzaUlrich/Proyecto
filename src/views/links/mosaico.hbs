@@ -1,5 +1,93 @@
-
 {{#each data}}
-    {{img}}
-    {{timeago createdAt}}
+{{img}}
+{{timeago createdAt}}
 {{/each }}
+<style>
+    #imageInfo {
+        display: none;
+    }
+
+    #actualPath {
+        display: none;
+    }
+
+    body {overflow: hidden;}
+
+    .myimg {
+        cursor: pointer;
+        transition: 0.3s;
+        margin: 0;
+        float: left;
+        opacity: .9;
+    }
+    #backgroundImage{
+        position: absolute;
+        position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+    width: auto;
+    height: 100vh;
+    opacity: .7;
+    z-index: 1;
+    }
+
+</style>
+
+<h1 id="imageInfo">{{files}}</h1>
+<h1 id="actualPath">{{actualPath}}</h1>
+<img id="backgroundImage" src="" alt="">
+<div class="flex"></div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script>
+    const imageText = document.getElementById("imageInfo").textContent;
+    const actualPath = document.getElementById("actualPath").textContent;
+    const backgroundImage = document.getElementById("backgroundImage");
+    backgroundImage.src = "../backgroundImage/ETG_NEW-02.svg"
+    var testImg = document.getElementById("testImg");
+    var imageChar = '';
+    var imageArray = [];
+    for (var i = 0; i < imageText.length; i++) {
+        if (imageText[i] === ',') {
+            imageArray.push("../fullImage/" + imageChar);
+            imageChar = '';
+        } else {
+            imageChar += imageText[i];
+        }
+    }
+    var imgHeight = 17;
+    var imgWidth = 30;
+    var axis = [2];
+    var images = [];
+    var totalWidth = window.innerWidth;
+    var totalHeight = window.innerHeight;
+    axis[0] = totalWidth / imgWidth;
+    axis[1] = totalHeight / imgHeight;
+
+    var result = axis[0]>axis[1] ? axis[1] : axis[1];
+    console.log(axis[0]);
+    console.log(axis[1]);
+    console.log(result);
+    var num = 0;
+    var myImg = "myimg";
+    for (var i = 0; i < imgWidth; i++) {
+        for (var j = 0; j < imgHeight; j++) {
+            $(".flex").append("<img class=" + myImg + "  src=" + imageArray[num] + " width=" + axis[0] + "px height=" + result + "></img>");
+            num++;
+            if (num > imageArray.length - 1) num = 0;
+        }
+    }
+
+    /*
+    function printMousePos(event) {
+  document.body.textContent =
+    "clientX: " + event.clientX +
+    " - clientY: " + event.clientY;
+}
+
+document.addEventListener("click", printMousePos);
+    */
+</script>

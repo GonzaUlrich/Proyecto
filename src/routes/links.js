@@ -41,20 +41,21 @@ router.post('/add', async (req,res)=>{
     //res.redirect('/links');
 });
 
-router.post('/image', (req,res)=>{
-
-let sampleFile;
+router.post('/image', async (req,res)=>{
+    let sampleFile;
     let uploadPath;
-
+  
     if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
+      return res.status(400).send('No files were uploaded.');
     }
   
     // name of the input is sampleFile
+    console.log(req.files);
+    console.log(req.files.sampleFile);
     sampleFile = req.files.sampleFile;
     let changeDirPath = __dirname.replace("routes",'');
-    
     uploadPath= changeDirPath + '/uploadImages/fullImage/' + sampleFile.name ;
+    
     // Use mv() to place file on the server
     sampleFile.mv(uploadPath, function (err) {
       if (err) return res.status(500).send(err);
@@ -77,10 +78,19 @@ let sampleFile;
     let ulpoadpathShrinkImg;
 });
 
+router.get('/mosaico', (req,res)=>{
+    
+    var fs = require('fs');
+    let changeDirPath = __dirname.replace("routes",'');
+    let actualPath = changeDirPath+"uploadImages/fullImage";
+    var files = fs.readdirSync(actualPath) ;
+    res.render('links/mosaico', {files, actualPath});
+});
+
 router.get('/', async (req,res)=>{
     const data = await pool.query('SELECT * FROM fotos' );
     console.log(data);
-    res.render('links/mosaico', {data})
+    res.render('links/mosaico', {data} )
 });
 
 router.get('/delete/:id',async (req,res) =>{

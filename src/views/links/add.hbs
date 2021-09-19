@@ -18,7 +18,6 @@
     box-sizing: border-box;
     padding: 20px;
     width: 30vw;
-
   }
 
   .title {
@@ -186,32 +185,43 @@
     align-items: center;
   }
 
-  /* The Modal (background) */
   .modal {
     display: none;
-    /* Hidden by default */
     z-index: 1;
-    /* Sit on top */
-    /* Location of the box */
     overflow-y: hidden;
     width: 87vw;
-    /* Full width */
-
-    /* Full height */
-
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .modal2 {
+    display: none;
+    z-index: 1;
+    overflow-y: hidden;
+    width: 87vw;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
   }
 
-  /* Modal Content */
   .modal-content {
     background-color: #15172be3;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
     height: 95vh;
+    display: grid;
+    grid-template-rows: 1fr 6fr 1fr;
+  }
+  .modal-content {
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    height: 95vh;
+    display: grid;
+    grid-template-rows: 1fr 6fr 1fr;
   }
 
   .allignTopModal {
@@ -219,7 +229,6 @@
     justify-content: space-between;
   }
 
-  /* The Close Button */
   .close {
     color: #aaaaaa;
     float: right;
@@ -234,10 +243,11 @@
     cursor: pointer;
   }
 
-
   .cameraButtons {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
 
   .cameraButtons button {
@@ -260,15 +270,18 @@
 
   .centerCamera {
     display: flex;
-    align-items: center;
+    justify-content: center;
   }
 
   #video {
     max-height: 100%;
+    width: auto;
   }
 
   #canvas {
     margin-left: 50px;
+    height: 200px;
+    width: 200px;
   }
 </style>
 
@@ -298,64 +311,40 @@
   </form>
   <br>
   <form id="myForm1" action="/links/image" method="POST" encType="multipart/form-data">
-
     <div class="imageButtons">
-      <input id="file" class="inputfile" type="file" name="sampleFile" accept="image/*" onchange="loadFile(event)">
+      <input id="file" class="inputfile" type="file" name="sampleFile" accept="image/*" onchange="loadFile(event)" encType="multipart/form-data">
       <label id="uploadImage" class="uploadImage" for="file">Subir archivo</label>
       <div class="spaceButtons"> O </div>
       <button id="myBtn" class="uploadImage" type="button">Foto</button>
     </div>
-
   </form>
 
   <div id="myModal" class="modal">
-    <!-- Modal content -->
     <div class="modal-content">
       <div class="allignTopModal">
         <span class="close">&times;</span>
-        <div class="cameraButtons">
-          <button id="start-camera">Start Camera</button>
-          <button id="click-photo">Click Photo</button>
-        </div>
       </div>
       <div class="centerCamera">
         <video id="video" autoplay></video>
+        <!--<canvas id="canvas"></canvas>-->
+      </div>
+      <div class="cameraButtons">
+          <button id="click-photo">Click Photo</button>
+        </div>
+    </div>
+  </div>
+  <div id="myModal2" class="modal2">
+    <div class="modal-content2">
+      <div class="allignTopModal">
+        <span class="close2">&times;</span>
+      </div>
+      <div class="centerCamera">
         <canvas id="canvas"></canvas>
       </div>
-
-      <script>
-        let camera_button = document.querySelector("#start-camera");
-        let video = document.querySelector("#video");
-        var videoWidth,videoHeight;
-        video.addEventListener( "loadedmetadata", function (e) {
-          videoWidth = this.videoWidth;
-          videoHeight = this.videoHeight;
-        }, false );
-        let click_button = document.querySelector("#click-photo");
-        let canvas = document.querySelector("#canvas");
-
-        camera_button.addEventListener('click', async function () {
-          let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-          video.srcObject = stream;
-        });
-
-        click_button.addEventListener('click', function () {
-          if(videoWidth > videoHeight){
-            let cal = (videoWidth - videoHeight)/2;
-            console.log(cal);
-            console.log(videoHeight)
-            canvas.getContext('2d').drawImage(video, cal, 0, videoHeight, videoHeight ,0,0,200,200);
-          }
-          
-          let image_data_url = canvas.toDataURL();
-          var placeholderImg = document.getElementById("placeholderImg");
-          placeholderImg.src = image_data_url;
-
-          // data url of the image
-        });
-      </script>
+      <div class="cameraButtons">
+          <button id="confirmButton">Seee</button>
+        </div>
     </div>
-
   </div>
   <input class="submit" type="button" onclick="myFunction()" value="Submit form">
 
@@ -366,87 +355,150 @@
 
 
 <script>
-  var notAbilable = false;
+  // Chequeos de validacion
   var changeImg = false;
   function validationCheck(variableName, idname) {
-    notAbilable = false;
     if (variableName === '' || variableName === ' ') {
-      return document.getElementById(idname).style.color = 'red';
-      notAbilable = true;
+       document.getElementById(idname).style.color = 'red';
+       return false;
     }
+    return true;
   }
-
   function resetColor(resetName) {
     document.getElementById(resetName).style.color = '#65657b';
     notAbilable = false;
   }
+  if (false) {
+      document.getElementsByClassName("uploadImage")[0].style.color = 'red';
+  }
 
+  //Modal
+  let video = document.querySelector("#video");
+  var videoWidth, videoHeight;
+  video.addEventListener("loadedmetadata", function (e) {
+    videoWidth = this.videoWidth;
+    videoHeight = this.videoHeight;
+  }, false);
+  let click_button = document.querySelector("#click-photo");
+  let canvas = document.querySelector("#canvas");
+
+var image_data_url;
+  click_button.addEventListener('click', function () {
+    modal2.style.display = "block";
+    console.log(videoWidth,videoHeight)
+    if (videoWidth > videoHeight) {
+      let cal = (videoWidth - videoHeight) / 2;
+      canvas.height=videoHeight;
+      canvas.width=videoHeight;
+      canvas.getContext('2d').drawImage(video, cal, 0, videoHeight, videoHeight, 0, 0, canvas.width, canvas.height);
+    }
+    else if (videoWidth < videoHeight) {
+      let cal = (videoHeight - videoWidth) / 2;
+      canvas.height=videoWidth;
+      canvas.width=videoWidth;
+      canvas.getContext('2d').drawImage(video, cal, 0, videoWidth, videoWidth, 0, 0, canvas.width, canvas.height);
+    }
+    else {
+      canvas.height=videoWidth;
+      canvas.width=videoWidth;
+      canvas.getContext('2d').drawImage(video, 0, 0, videoWidth, videoWidth, 0, 0, canvas.width, canvas.height);
+    }
+    image_data_url = canvas.toDataURL();
+    var placeholderImg = document.getElementById("placeholderImg");
+    placeholderImg.src = image_data_url;
+
+  });
+
+  var modal  = document.getElementById("myModal");
+  var modal2 = document.getElementById("myModal2");
+  var btn    = document.getElementById("myBtn");
+  var btn2   = document.getElementById("confirmButton");
+  var span   = document.getElementsByClassName("close")[0];
+  var span2  = document.getElementsByClassName("close2")[0];
+
+  btn.onclick = async function () {
+    modal.style.display = "block";
+    let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    video.srcObject = stream;
+  }
+
+  btn2.onclick =  function () {
+    image_data_url;
+    var aDownloadLink = document.createElement('a');
+    aDownloadLink.download = 'canvas_image.png';
+    aDownloadLink.href = image_data_url;
+    aDownloadLink.click();
+  }
+
+
+  span.onclick = function ()  {modal.style.display = "none"; }
+  span2.onclick = function () {modal2.style.display = "none";}
+
+  window.onclick = function (event){
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  //Guardado de la imagen y muestreo
   file.onchange = evt => {
     notAbilable = false;
     document.getElementsByClassName("uploadImage")[0].style.color = '#a9a9b6'
     changeImg = true;
     var placeholderImg = document.getElementById("placeholderImg");
     const [imgfile] = file.files;
-    console.log(file);
-    console.log(file.files);
     document.getElementById("uploadImage").innerHTML = [imgfile.name];
-    if (imgfile) {
-      placeholderImg.src = URL.createObjectURL(imgfile)
-    }
+    placeholderImg.src = URL.createObjectURL(imgfile);
+
+    const img = document.createElement('img');
+
+    // Initialize the canvas and it's size
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set width and height
+    canvas.width = 200;
+    canvas.height = 200;
+
+    // Draw image and export to a data-uri
+    ctx.drawImage(placeholderImg, 0, 0, canvas.width, canvas.height);
+    const dataURI = canvas.toDataURL();
+
+    // Do something with the result, like overwrite original
+    img.src = dataURI;
+
+    var form       = document.createElement("form");
+    var element1   = document.createElement("input");
+    form.method    = "POST";
+    form.action    = "/links/image"; 
+    element1.value = img;
+
+
+    
+    form.appendChild(element1); 
+    document.body.appendChild(form);
+    form.submit();
   }
 
-  // Get the modal
-  var modal = document.getElementById("myModal");
-
-  // Get the button that opens the modal
-  var btn = document.getElementById("myBtn");
-
-  // Get the <span> element that closes the modal
-  var span = document.getElementsByClassName("close")[0];
-
-  // When the user clicks the button, open the modal 
-  btn.onclick = function () {
-    modal.style.display = "block";
-  }
-
-  // When the user clicks on <span> (x), close the modal
-  span.onclick = function () {
-    modal.style.display = "none";
-  }
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
+  
 
   //LLamado al submit
   function myFunction() {
+    let securityCheck= true;
+
     //Chequeo form1
-    let myFormName = document.forms["myForm"]["tempfname"].value;
-    validationCheck(myFormName, "placeeholderName");
-    let myFormLastname = document.forms["myForm"]["templastname"].value;
-    validationCheck(myFormLastname, "placeeholderLastname");
-    let description = document.forms["myForm"]["description"].value;
-    validationCheck(description, "placeeholderDescription");
+    //if(!validationCheck(document.forms["myForm"]["tempfname"].value, "placeeholderName")){securityCheck= false;}
+    //if(!validationCheck(document.forms["myForm"]["templastname"].value, "placeeholderLastname")){securityCheck= false;}
+    //if(!validationCheck(document.forms["myForm"]["description"].value, "placeeholderDescription")){securityCheck= false;}
 
     //Chequeo form2
-    //notAbilable = true;
-    if (!changeImg ) {
-      
-      //return document.getElementsByClassName("uploadImage")[0].style.color = 'red';
-    }
 
 
-    if (true) {
-      console.log(file)
-      console.log(file.name)
-      file.name = placeholderImg;
-      console.log(file.name)
+    if (securityCheck) {
+      console.log(file);
+      console.log(file.name);
       //document.getElementById("myForm").submit();
-      //document.getElementById("myForm1").submit();
+      document.getElementById("myForm1").submit();
     }
-
   };
 </script>
