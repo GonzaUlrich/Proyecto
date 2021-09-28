@@ -6,7 +6,8 @@
     display: flex;
     justify-content: center;
     height: 100vh;
-    background-image: url('../backgroundImage/standard.png');
+    background-color: grey;
+    /*background-image: url('../backgroundImage/standard.png');*/
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: 100vw auto;
@@ -195,6 +196,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
   .modal2 {
     display: none;
     z-index: 1;
@@ -215,7 +217,9 @@
     display: grid;
     grid-template-rows: 1fr 6fr 1fr;
   }
-  .modal-content {
+
+  .modal-content2 {
+    background-color: #15172b;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
@@ -248,6 +252,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    z-index: 1;
   }
 
   .cameraButtons button {
@@ -267,6 +272,32 @@
     margin-left: 10px;
 
   }
+  .cameraButtons2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    z-index: 1;
+  }
+
+  .cameraButtons2 button {
+    display: flex;
+    flex-direction: row;
+    background-color: #08d;
+    border-radius: 50%;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
+    cursor: pointer;
+    font-size: 18px;
+    height: 60px;
+    width: 60px;
+    outline: 0;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+
+  }
 
   .centerCamera {
     display: flex;
@@ -279,10 +310,22 @@
   }
 
   #canvas {
-    margin-left: 50px;
-    height: 200px;
-    width: 200px;
+
   }
+  .closeModal1Button{
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+  }
+
 </style>
 
 <div class="form">
@@ -312,10 +355,11 @@
   <br>
   <form id="myForm1" action="/links/image" method="POST" encType="multipart/form-data">
     <div class="imageButtons">
-      <input id="file" class="inputfile" type="file" name="sampleFile" accept="image/*" onchange="loadFile(event)" encType="multipart/form-data">
-      <label id="uploadImage" class="uploadImage" for="file">Subir archivo</label>
+      <input id="file" class="inputfile" type="file" name="sampleFile" accept="image/*" onchange="loadFile(event)"
+        encType="multipart/form-data">
+      <label id="uploadImage" class="uploadImage" for="file">Subir foto</label>
       <div class="spaceButtons"> O </div>
-      <button id="myBtn" class="uploadImage" type="button">Foto</button>
+      <button id="myBtn" class="uploadImage" type="button">Tomarse foto</button>
     </div>
   </form>
 
@@ -323,27 +367,29 @@
     <div class="modal-content">
       <div class="allignTopModal">
         <span class="close">&times;</span>
+        <button class="closeModal1Button"></button>
       </div>
       <div class="centerCamera">
         <video id="video" autoplay></video>
         <!--<canvas id="canvas"></canvas>-->
       </div>
       <div class="cameraButtons">
-          <button id="click-photo">Click Photo</button>
-        </div>
+        <button id="click-photo">Click Photo</button>
+      </div>
     </div>
   </div>
-  <div id="myModal2" class="modal2">
+  <div id="myModal2" class="modal">
     <div class="modal-content2">
       <div class="allignTopModal">
-        <span class="close2">&times;</span>
+        <span class="close">&times;</span>
       </div>
       <div class="centerCamera">
         <canvas id="canvas"></canvas>
       </div>
-      <div class="cameraButtons">
-          <button id="confirmButton">Seee</button>
-        </div>
+      <div class="cameraButtons2">
+        <button id="confirmButton">👍</button>
+        <button id="denyButton">👎</button>
+      </div>
     </div>
   </div>
   <input class="submit" type="button" onclick="myFunction()" value="Submit form">
@@ -359,8 +405,8 @@
   var changeImg = false;
   function validationCheck(variableName, idname) {
     if (variableName === '' || variableName === ' ') {
-       document.getElementById(idname).style.color = 'red';
-       return false;
+      document.getElementById(idname).style.color = 'red';
+      return false;
     }
     return true;
   }
@@ -369,7 +415,7 @@
     notAbilable = false;
   }
   if (false) {
-      document.getElementsByClassName("uploadImage")[0].style.color = 'red';
+    document.getElementsByClassName("uploadImage")[0].style.color = 'red';
   }
 
   //Modal
@@ -380,27 +426,27 @@
     videoHeight = this.videoHeight;
   }, false);
   let click_button = document.querySelector("#click-photo");
-  let canvas = document.querySelector("#canvas");
+  var canvas = document.querySelector("#canvas");
 
-var image_data_url;
+  var image_data_url;
   click_button.addEventListener('click', function () {
     modal2.style.display = "block";
-    console.log(videoWidth,videoHeight)
+    console.log(videoWidth, videoHeight)
     if (videoWidth > videoHeight) {
       let cal = (videoWidth - videoHeight) / 2;
-      canvas.height=videoHeight;
-      canvas.width=videoHeight;
+      canvas.height = videoHeight;
+      canvas.width = videoHeight;
       canvas.getContext('2d').drawImage(video, cal, 0, videoHeight, videoHeight, 0, 0, canvas.width, canvas.height);
     }
     else if (videoWidth < videoHeight) {
       let cal = (videoHeight - videoWidth) / 2;
-      canvas.height=videoWidth;
-      canvas.width=videoWidth;
+      canvas.height = videoWidth;
+      canvas.width = videoWidth;
       canvas.getContext('2d').drawImage(video, cal, 0, videoWidth, videoWidth, 0, 0, canvas.width, canvas.height);
     }
     else {
-      canvas.height=videoWidth;
-      canvas.width=videoWidth;
+      canvas.height = videoWidth;
+      canvas.width = videoWidth;
       canvas.getContext('2d').drawImage(video, 0, 0, videoWidth, videoWidth, 0, 0, canvas.width, canvas.height);
     }
     image_data_url = canvas.toDataURL();
@@ -409,12 +455,16 @@ var image_data_url;
 
   });
 
-  var modal  = document.getElementById("myModal");
+  var uploadImage = document.getElementById("uploadImage"); 
+  var modal = document.getElementById("myModal");
   var modal2 = document.getElementById("myModal2");
-  var btn    = document.getElementById("myBtn");
-  var btn2   = document.getElementById("confirmButton");
-  var span   = document.getElementsByClassName("close")[0];
-  var span2  = document.getElementsByClassName("close2")[0];
+  var btn = document.getElementById("myBtn");
+  var confirmButton = document.getElementById("confirmButton");
+  var denyButton = document.getElementById("denyButton");
+  var span = document.getElementsByClassName("close")[0];
+  var closeModal1Button = document.getElementsByClassName("closeModal1Button")[0];
+  var spaceButtons = document.getElementsByClassName("spaceButtons")[0];
+  
 
   btn.onclick = async function () {
     modal.style.display = "block";
@@ -422,83 +472,139 @@ var image_data_url;
     video.srcObject = stream;
   }
 
-  btn2.onclick =  function () {
+  confirmButton.onclick = function () {
+    spaceButtons.style.display = "none";
+    uploadImage.style.display = "none";
+    btn.style.backgroundColor = "#8ED049";
+    btn.style.color = "#000000";
+    modal2.style.display = "none"; 
+    modal.style.display = "none";
+    //Descargar 
+    /*
     image_data_url;
     var aDownloadLink = document.createElement('a');
     aDownloadLink.download = 'canvas_image.png';
     aDownloadLink.href = image_data_url;
-    aDownloadLink.click();
+    aDownloadLink.click();*/
+
+    //Enviar al sv
+    canvas.toBlob(function (blob) {
+      form.append('sampleFile', blob, 'image');
+    })
   }
 
+  denyButton.onclick = function(){
+    modal2.style.display = "none"; 
+  }
 
-  span.onclick = function ()  {modal.style.display = "none"; }
-  span2.onclick = function () {modal2.style.display = "none";}
+  span.onclick = function () { modal.style.display = "none"; }
 
-  window.onclick = function (event){
+  closeModal1Button.onclick = function () { modal.style.display = "none"; }
+
+
+  window.onclick = function (event) {
     if (event.target == modal) {
       modal.style.display = "none";
     }
   }
 
   //Guardado de la imagen y muestreo
+  const canvas1 = document.createElement("canvas");
+  const form = new FormData();
+  var imageIsLoad= false;
   file.onchange = evt => {
-    notAbilable = false;
-    document.getElementsByClassName("uploadImage")[0].style.color = '#a9a9b6'
-    changeImg = true;
+    spaceButtons.style.display = "none";
+    btn.style.display = "none";
+    uploadImage.style.backgroundColor = "#8ED049";
+    uploadImage.style.color = "#000000";
+
     var placeholderImg = document.getElementById("placeholderImg");
     const [imgfile] = file.files;
     document.getElementById("uploadImage").innerHTML = [imgfile.name];
     placeholderImg.src = URL.createObjectURL(imgfile);
 
-    const img = document.createElement('img');
+    const reader = new FileReader();
 
-    // Initialize the canvas and it's size
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    reader.onload = function () {
+      const img = new Image();
+      img.onload = function () {
+        const context = canvas1.getContext("2d");
 
-    // Set width and height
-    canvas.width = 200;
-    canvas.height = 200;
+        if (img.width > img.height) {
+          let cal = (img.width - img.height) / 2;
+          canvas1.height = img.height;
+          canvas1.width = img.height;
+          context.drawImage(img, cal, 0, img.height, img.height, 0, 0, canvas1.width, canvas1.height);
+        }
+        else if (img.width < img.height) {
+          let cal = (img.height - img.width) / 2;
+          canvas1.height = img.width;
+          canvas1.width = img.width;
+          context.drawImage(img, 0, cal, img.width, img.width, 0, 0, canvas1.width, canvas1.height);
+        }
+        else {
+          
+          canvas1.height = img.width;
+          canvas1.width = img.width;
+          context.drawImage(img, 0, 0, img.width, img.width, 0, 0, canvas1.height, canvas1.height);
+        }
+        canvas1.toBlob(function (blob) {
+          form.append('sampleFile', blob, 'image');
+          imageIsLoad=true;
+        })
 
-    // Draw image and export to a data-uri
-    ctx.drawImage(placeholderImg, 0, 0, canvas.width, canvas.height);
-    const dataURI = canvas.toDataURL();
-
-    // Do something with the result, like overwrite original
-    img.src = dataURI;
-
-    var form       = document.createElement("form");
-    var element1   = document.createElement("input");
-    form.method    = "POST";
-    form.action    = "/links/image"; 
-    element1.value = img;
-
-
-    
-    form.appendChild(element1); 
-    document.body.appendChild(form);
-    form.submit();
+      }
+      img.src = reader.result;
+    }
+    reader.readAsDataURL(file.files[0])
   }
 
-  
+
 
   //LLamado al submit
   function myFunction() {
-    let securityCheck= true;
+    let securityCheck = true;
 
     //Chequeo form1
-    //if(!validationCheck(document.forms["myForm"]["tempfname"].value, "placeeholderName")){securityCheck= false;}
-    //if(!validationCheck(document.forms["myForm"]["templastname"].value, "placeeholderLastname")){securityCheck= false;}
-    //if(!validationCheck(document.forms["myForm"]["description"].value, "placeeholderDescription")){securityCheck= false;}
+    if(!validationCheck(document.forms["myForm"]["tempfname"].value, "placeeholderName")){
+        securityCheck= false;
+      }else{
+        securityCheck= true;
+      }
+    if(!validationCheck(document.forms["myForm"]["templastname"].value, "placeeholderLastname")){
+        securityCheck= false;
+      }else{
+        securityCheck= true;
+      }
+    if(!validationCheck(document.forms["myForm"]["description"].value, "placeeholderDescription")){
+      securityCheck= false;
+      }else{
+        securityCheck= true;
+      }
 
     //Chequeo form2
-
+    function isCanvasBlank(canvas) {
+      const context = canvas.getContext('2d');
+      const pixelBuffer = new Uint32Array(
+        context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+      );
+      return !pixelBuffer.some(color => color !== 0);
+    }
 
     if (securityCheck) {
-      console.log(file);
-      console.log(file.name);
-      //document.getElementById("myForm").submit();
-      document.getElementById("myForm1").submit();
+  
+      if (!isCanvasBlank(canvas)){
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/links/image', true);
+        xhr.send(form);
+        document.getElementById("myForm").submit();
+      }
+      else if(imageIsLoad){
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/links/image', true);
+        xhr.send(form);
+        document.getElementById("myForm").submit();
+      }
     }
   };
 </script>

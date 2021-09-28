@@ -1,10 +1,12 @@
 //mysql
 const pool = mysql.createPool({
-    connectionLimit:10,
-    host:'localhost',
-    user: 'root',
-    password: '',
-    database: 'proyectofinano'
+    database:{
+        connectionLimit:10,
+        host : 'localhost',
+        user: 'proyecto_mural',
+        password: 'mosaico@2021',
+        database: 'proyecto_mural'
+    }
 });
 
 //Get

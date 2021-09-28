@@ -1,0 +1,365 @@
+<style>
+    #imageInfo {
+        display: none;
+    }
+
+    #actualPath {
+        display: none;
+    }
+
+    html {
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .myImg {
+        cursor: pointer;
+        transition: 0.3s;
+        margin: 0;
+        float: left;
+        opacity: .9;
+    }
+
+    #backgroundImage {
+        position: absolute;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: auto;
+        height: 100vh;
+        opacity: .7;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100vw; /* Full width */
+  height: 100vh; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+  z-index: 3;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
+    .modal-content {
+
+  display: block;
+  width: 30%;
+  height: auto;
+  max-width: 700px;
+  z-index: 3;
+}
+
+.modal-content, #caption {  
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)} 
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+    .myImg {
+        position: relative;
+        z-index: 0;
+    }
+
+    .myImg:hover {
+        transform: scale(1.5);
+        z-index: 1;
+        opacity: 1;
+
+    }
+    .hidden{
+        display: none;
+    }
+    .flex{
+        display: flex;
+        align-content: center;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+    .overlay0 {
+  
+  bottom: 0; 
+  background: rgb(235, 4, 4);
+  background: rgba(0, 0, 0, 0.5); /* Black see-through */
+  color: #f1f1f1; 
+  width: 30%;
+  transition: .5s ease;
+  opacity:1;
+  color: white;
+  font-size: 20px;
+  padding: 20px;
+  text-align: center;
+}
+
+.container:hover .overlay0 {
+  opacity: 1;
+}
+.overlay1 {
+  
+  bottom: 0; 
+  background: rgb(235, 4, 4);
+  background: rgba(0, 0, 0, 0.5); /* Black see-through */
+  color: #f1f1f1; 
+  width: 30%;
+  transition: .5s ease;
+  opacity:1;
+  color: white;
+  font-size: 20px;
+  padding: 20px;
+  text-align: center;
+}
+
+.container:hover .overlay1 {
+  opacity: 1;
+}
+.screenShot{
+    position: absolute;
+    z-index: 2;
+    opacity: 0.5;
+}
+.share{
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    opacity: 0.8;
+    border-radius: 12%;
+}
+</style>
+
+<img id="backgroundImage" src="" alt="">
+<button class="screenShot" onclick="screenShot()">ScreenShot</button>
+<button class="share" onclick="refresh()">refresh</button>
+
+<div class="flexb">
+    <div class="flex">
+
+    </div>  
+</div>
+
+
+<div id="myModal" class="modal">
+  <span class="close">&times;</span>
+  <button class="deleteImage" onclick="deleteThisImage()"> Borrar imagen</button>
+  <img class="modal-content" id="img01">
+  
+  <div id="caption"></div>
+  <div class="overlay0"></div>
+  <div class="overlay1"></div>
+</div>
+
+
+<div class="hidden">
+    {{#each data}}
+        <img class="hiddenImg" id='{{id}}' src="../fullImage/{{imgUrl}}" alt="{{fname}},{{lastname}},{{description}}" onclick="openModal()">
+    {{/each }}
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="/html2canvas.js"></script>
+<script>
+    function  deleteImages(){
+        var deleteNumb =0
+        while(0!==allImageInScreen.length){
+            allImageInScreen[0].parentNode.removeChild(allImageInScreen[0]);
+        }
+        summonImages();
+    }
+    function summonImages(){
+        switch(1){
+        //Como llegan
+        case 1:
+            let aux=0;
+            for (var i = 0; i < allImg.length; i++) {
+                if(aux>=allImg.length-1){aux=0;}else{aux++}
+                $(".flex").append("<img class=" + myImg +" id="+allImg[aux].id +"  src=" + allImg[aux].src + " width=" + axis[0] + "px height=" + axis[1] +" alt="+allImgAlt[aux] +" onclick="+"openModal(this)"+"></img>");
+            }
+        break;
+       
+    }
+    }
+    function reportWindowSize() {  
+                totalWidth = window.innerWidth;
+                totalHeight = window.innerHeight;
+                axis[0] = totalHeight / row;
+                axis[1] = totalHeight / row;
+                totalImages = (row*row) + (Math.floor((totalWidth-totalHeight) / axis[0])*row);
+                column = Math.floor((row + ((totalWidth-totalHeight) / axis[0]))-2);
+                
+                deleteImages();
+                
+        }
+    function screenShot(){
+        const screenshotTarget = document.body;
+
+        html2canvas(screenshotTarget).then((canvas) => {
+            const base64image = canvas.toDataURL("image/png");
+            var aDownloadLink = document.createElement('a');
+            aDownloadLink.download = 'canvas_image.png';
+            aDownloadLink.href = base64image;
+            aDownloadLink.click();
+        });
+
+    
+    }
+    function refresh(){
+        window.location.reload(1);    
+    }
+
+    var notRefresh=true;
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function() { 
+  modal.style.display = "none";
+  notRefresh=true;
+}
+
+
+
+    var modal = document.getElementById("myModal");
+    modal.style.display = "none";
+    const backgroundImage = document.getElementById("backgroundImage");
+    //backgroundImage.src = "../backgroundImage/ETG_NEW-02.svg"
+
+  
+    
+    
+    var totalImages=0;
+    var row = 17;
+    var column = 0;
+    var axis = [2];
+    var totalWidth = window.innerWidth;
+    var totalHeight = window.innerHeight;
+    //PC
+    if(totalWidth>=totalHeight){
+        axis[0] = totalHeight / row;
+        axis[1] = totalHeight / row;
+        totalImages = (row*row) + (Math.floor((totalWidth-totalHeight) / axis[0])*row);
+        column = Math.floor((row + ((totalWidth-totalHeight) / axis[0]))-2);
+        var num = 0;
+        var myImg = "myImg";
+        var allImg = document.getElementsByClassName("hiddenImg");
+        var allImgAlt=[];
+        for(var i=0; i<allImg.length ; i++){
+            allImgAlt[i]='';
+            for(var j=0;j<allImg[i].alt.length;j++){
+                if(allImg[i].alt[j]===' '){
+                    allImgAlt[i]+="_"
+                }else{
+                    allImgAlt[i]+=allImg[i].alt[j];
+                }
+            }
+        }
+        var timerCheck=true;
+        summonImages();
+    }
+    //Movile
+    else{
+
+    }
+
+
+//Adaptacion de pantalla
+    
+
+
+    window.onresize = reportWindowSize;
+    var allImageInScreen = document.getElementsByClassName("myImg");
+    var actualImage;
+ 
+
+    function openModal(ele) {
+        notRefresh=false;
+        var modal = document.getElementById("myModal");
+        var modalImg = document.getElementById("img01");
+        var overlayModal = document.getElementsByClassName("overlay");
+        console.log(ele);
+        actualImage=ele;
+        modal.style.display = "flex";
+        modalImg.src = ele.src;
+        let nombreApellido='';
+        var descripcion = '';
+        var counter=0;
+        for(var i =0; i<ele.alt.length;i++ ){
+            if(counter<2){
+                if(ele.alt[i]===','){
+                    counter++;
+                    nombreApellido+=" ";
+                   
+                }else{
+                    nombreApellido+= ele.alt[i];
+                }
+            }else{
+                if(ele.alt[i]==='_'){
+                    descripcion+= " ";
+                }else{
+                    descripcion+= ele.alt[i];
+                }
+            }
+        }
+
+        $('.overlay0').html(nombreApellido);
+        $('.overlay1').html(descripcion);
+        
+    }
+    function deleteThisImage(){
+        var aDownloadLink = document.createElement('a');
+            aDownloadLink.href = '/links/delete/' + actualImage.id ;
+            aDownloadLink.click();
+    }
+
+    function automaticRefresh(){
+        setTimeout(function(){
+        if (notRefresh) {
+            window.location.reload(1);
+        }else{
+            automaticRefresh();
+        }
+    }, 60000);
+    }
+    automaticRefresh();
+
+
+    
+</script>

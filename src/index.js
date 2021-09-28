@@ -4,6 +4,7 @@ const exphbs = require('express-handlebars');
 const path = require('path');
 const mysql = require ('mysql');
 const bodyParser = require('body-parser');
+//const flash = require('connect-flash');
 
 //const { extname } = require('path/posix');
 
@@ -31,7 +32,7 @@ app.set('view engine', '.hbs');
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-
+//app.use(flash);
 
 
 //Global variables
